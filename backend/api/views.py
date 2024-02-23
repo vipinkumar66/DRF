@@ -5,11 +5,14 @@ from products.models import Product
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from products.serializers import ProductSerializer
+
 
 @api_view(["GET"])
 def api_home(request, *args, **kwargs):
-    product = Product.objects.all().order_by("?").first()
+    instance = Product.objects.all().order_by("?").first()
     data = {}
-    if product:
-        data = model_to_dict(product, fields=["id", "title", "content", "price"])
+    if instance:
+        data = ProductSerializer(instance).data
+        # data = model_to_dict(product, fields=["id", "title", "content", "price"])
     return Response(data)
