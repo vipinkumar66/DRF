@@ -1,11 +1,12 @@
 # Single item data => Generic Views
 
-from rest_framework import generics
+from rest_framework import generics, mixins
 from .models import Product
 from . import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+
 
 class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
@@ -72,3 +73,40 @@ class ProductDeleteView(generics.DestroyAPIView):
     def perform_destroy(self, instance):
         # if we want to do any thing with the instance we can do it here
         return super().perform_destroy(instance)
+
+
+class ProductMixinView(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    generics.GenericAPIView
+):
+    # This mixin allows us to do this here
+    queryset = Product.objects.all()
+    serializer_class = serializers.ProductSerializer
+    lookup_field = "pk"
+
+    def get(self, request, *args, **kwargs):
+        """
+        If we use the post method also still it is going to
+        """
+        pk = kwargs.get("pk")
+        if pk is not None:
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        """
+        This is one of the method which is only given to the createapiview
+        and it takes two arguments: Instance and the serializer
+        """
+        title = serializer.validated_data.get("title")
+        content = serializer.validated_data.get("content") or None
+        if content is None:
+            content = "This is a single view doing cool stuff"
+        serializer.save(content=content)
+
+product_mixin_view = ProductMixinView.as_view()
