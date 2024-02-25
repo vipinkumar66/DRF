@@ -86,7 +86,7 @@ class ProductMixinView(
     serializer_class = serializers.ProductSerializer
     lookup_field = "pk"
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.DjangoModelPermissions]
 
     def get(self, request, *args, **kwargs):
         """
