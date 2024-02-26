@@ -7,6 +7,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .permissions import IsStaffEditorPermissions
+from .authentication import TokenAuthentication
+
 
 class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
@@ -85,7 +87,10 @@ class ProductMixinView(
     queryset = Product.objects.all()
     serializer_class = serializers.ProductSerializer
     lookup_field = "pk"
-    authentication_classes = [authentication.SessionAuthentication]
+    authentication_classes = [
+        authentication.SessionAuthentication,
+        TokenAuthentication
+        ]
     permission_classes = [permissions.IsAdminUser, IsStaffEditorPermissions]
 
     def get(self, request, *args, **kwargs):
