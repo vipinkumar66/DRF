@@ -13,6 +13,8 @@ from .authentication import TokenAuthentication
 class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = serializers.ProductSerializer
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermissions]
+
 
     def perform_create(self, serializer):
         """
@@ -29,6 +31,8 @@ class ProductRetrieveView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = serializers.ProductSerializer
     # lookup_field = "pk"
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermissions]
+
 
 @api_view(["GET", "POST"])
 def alt_view(request, pk=None, *args, **kwargs):
@@ -61,6 +65,8 @@ class ProductUpdateView(generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = serializers.ProductSerializer
     lookup_field = "pk"
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermissions]
+
 
     def perform_update(self, serializer):
         instance = serializer.save()
@@ -71,6 +77,8 @@ class ProductDeleteView(generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = serializers.ProductSerializer
     lookup_field = "pk"
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermissions]
+
 
     def perform_destroy(self, instance):
         # if we want to do any thing with the instance we can do it here
@@ -87,10 +95,6 @@ class ProductMixinView(
     queryset = Product.objects.all()
     serializer_class = serializers.ProductSerializer
     lookup_field = "pk"
-    authentication_classes = [
-        authentication.SessionAuthentication,
-        TokenAuthentication
-        ]
     permission_classes = [permissions.IsAdminUser, IsStaffEditorPermissions]
 
     def get(self, request, *args, **kwargs):
